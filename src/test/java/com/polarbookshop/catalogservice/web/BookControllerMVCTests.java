@@ -1,15 +1,23 @@
 package com.polarbookshop.catalogservice.web;
 
+import com.polarbookshop.catalogservice.domain.Book;
 import com.polarbookshop.catalogservice.domain.BookNotFoundException;
 import com.polarbookshop.catalogservice.domain.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class)
@@ -30,4 +38,48 @@ class BookControllerMvcTests {
         mockMvc.perform(get("/books/" + isbn))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void whenPutCreatesBookThenShouldReturn201() throws Exception {
+        String isbn = "1234567890";
+        var book = new Book(isbn, "Title", "Author", 9.90);
+
+        given(bookService.editBookDetails(eq(isbn), any(Book.class)))
+                .willReturn(ResponseEntity.status(HttpStatus.CREATED).body(book));
+
+        mockMvc.perform(put("/books/{isbn}", isbn)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "isbn": "1234567890",
+                              "title": "Title",
+                              "author": "Author",
+                              "price": 9.90
+                            }
+                            """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.isbn").value(isbn));
+    }
+
+    @Test
+    void whenPutUpdatesBookThenShouldReturn200() throws Exception {
+        String isbn = "1234567890";
+        var book = new Book(isbn, "Updated Title", "Author", 9.90);
+
+        given(bookService.editBookDetails(eq(isbn), any(Book.class)))
+                .willReturn(ResponseEntity.ok(book));
+
+        mockMvc.perform(put("/books/{isbn}", isbn)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "isbn": "1234567890",
+                              "title": "Updated Title",
+                              "author": "Author",
+                              "price": 9.90
+                            }
+                            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Updated Title"));
+    }
+
 }

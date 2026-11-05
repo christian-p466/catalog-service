@@ -4,7 +4,10 @@ import com.polarbookshop.catalogservice.domain.Book;
 import com.polarbookshop.catalogservice.domain.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("books")
@@ -39,7 +42,10 @@ public class BookController {
     }
 
     @PutMapping("{isbn}")
-    public Book put(@PathVariable String isbn, @Valid @RequestBody Book book) {
+    public ResponseEntity<Book> put(@PathVariable String isbn, @Valid @RequestBody Book book) {
+        if (!isbn.equals(book.isbn())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Path ISBN must match the ISBN in the request body");
+        }
         return bookService.editBookDetails(isbn, book);
     }
 }

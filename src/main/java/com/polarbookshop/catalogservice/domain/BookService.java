@@ -1,5 +1,7 @@
 package com.polarbookshop.catalogservice.domain;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,14 +33,15 @@ public class BookService {
     public void removeBookFromCatalog(String isbn) {
         bookRepository.deleteByIsbn(isbn);
     }
-    public Book editBookDetails(String isbn, Book book) {
+    public ResponseEntity<Book> editBookDetails(String isbn, Book book) {
         return bookRepository.findByIsbn(isbn)
                 .map(existing -> {
-                    // Everything may change except the identifier.
                     var updated = new Book(existing.isbn(),
                             book.title(), book.author(), book.price());
-                    return bookRepository.save(updated);
+                    return ResponseEntity.ok(bookRepository.save(updated));
                 })
-                .orElseGet(() -> addBookToCatalog(book));
-    }
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(addBookToCatalog(book)));
+    } // had to look up how to do this
 }
