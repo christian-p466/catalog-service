@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest(BookController.class)
 class BookControllerMvcTests {
@@ -40,8 +41,8 @@ class BookControllerMvcTests {
     }
     @Test
     void whenPutCreatesBookThenShouldReturn201() throws Exception {
-        String isbn = "1234567890";
-        var book = new Book(isbn, "Title", "Author", 9.90);
+        String isbn = "0306406152";
+        var book = Book.of(isbn, "Title", "Author", 9.90);
 
         given(bookService.editBookDetails(eq(isbn), any(Book.class)))
                 .willReturn(ResponseEntity.status(HttpStatus.CREATED).body(book));
@@ -50,20 +51,22 @@ class BookControllerMvcTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                             {
-                              "isbn": "1234567890",
+                              "isbn": "0306406152",
                               "title": "Title",
                               "author": "Author",
-                              "price": 9.90
+                              "price": 9.90,
+                              "version": 0
                             }
                             """))
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isbn").value(isbn));
     }
 
     @Test
     void whenPutUpdatesBookThenShouldReturn200() throws Exception {
-        String isbn = "1234567890";
-        var book = new Book(isbn, "Updated Title", "Author", 9.90);
+        String isbn = "0306406152";
+        var book = Book.of(isbn, "Updated Title", "Author", 9.90);
 
         given(bookService.editBookDetails(eq(isbn), any(Book.class)))
                 .willReturn(ResponseEntity.ok(book));
@@ -72,12 +75,14 @@ class BookControllerMvcTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                             {
-                              "isbn": "1234567890",
+                              "isbn": "0306406152",
                               "title": "Updated Title",
                               "author": "Author",
-                              "price": 9.90
+                              "price": 9.90,
+                              "version": 0
                             }
                             """))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Updated Title"));
     }

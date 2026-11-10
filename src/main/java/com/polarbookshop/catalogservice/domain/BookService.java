@@ -36,12 +36,20 @@ public class BookService {
     public ResponseEntity<Book> editBookDetails(String isbn, Book book) {
         return bookRepository.findByIsbn(isbn)
                 .map(existing -> {
-                    var updated = new Book(existing.isbn(),
-                            book.title(), book.author(), book.price());
+                    var updated = new Book(
+                            existing.id(),
+                            existing.isbn(),
+                            book.title(),
+                            book.author(),
+                            book.price(),
+                            existing.createdDate(),
+                            existing.lastModifiedDate(),
+                            existing.version());
+
                     return ResponseEntity.ok(bookRepository.save(updated));
                 })
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.CREATED)
                         .body(addBookToCatalog(book)));
-    } // had to look up how to do this
+    }
 }
