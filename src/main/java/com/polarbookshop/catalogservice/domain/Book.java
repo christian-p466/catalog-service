@@ -2,6 +2,7 @@ package com.polarbookshop.catalogservice.domain;
 
 import java.time.Instant;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -35,11 +36,14 @@ public record Book(
         @LastModifiedDate
         Instant lastModifiedDate, // set on every insert and update
 
+        @Nullable
+        String publisher,
+
         @Version
         int version // optimistic locking
 ) {
         // Convenience factory: the framework fills in id, dates, and version.
-        public static Book of(String isbn, String title, String author, Double price) {
-                return new Book(null, isbn, title, author, price, null, null, 0);
+        public static Book of(String isbn, String title, String author, Double price, String publisher) {
+                return new Book(null, isbn, title, author, price, null, null, publisher, 0);
         }
 }

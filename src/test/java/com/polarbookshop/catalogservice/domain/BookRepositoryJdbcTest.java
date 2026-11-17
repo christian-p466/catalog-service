@@ -30,7 +30,7 @@ class BookRepositoryJdbcTests {
     @Test
     void findBookByIsbnWhenExisting() {
         var isbn = "1234561237";
-        var book = Book.of(isbn, "Title", "Author", 12.90);
+        var book = Book.of(isbn, "Title", "Author", 12.90, "Publisher");
         jdbcAggregateTemplate.insert(book); // arrange without the repository under test
 
         Optional<Book> actual = bookRepository.findByIsbn(isbn);
@@ -46,8 +46,8 @@ class BookRepositoryJdbcTests {
 
     @Test
     void findAllReturnsBooks() {
-        var book = Book.of("1234561237", "Title", "Author", 12.90);
-        var book2 = Book.of("1234561238", "Title2", "Author2", 13.90);
+        var book = Book.of("1234561237", "Title", "Author", 12.90, "Publisher");
+        var book2 = Book.of("1234561238", "Title2", "Author2", 13.90, "Publisher");
         jdbcAggregateTemplate.insert(book);
         jdbcAggregateTemplate.insert(book2);
 
@@ -61,7 +61,7 @@ class BookRepositoryJdbcTests {
 
     @Test
     void existsByIsbnIsFalse() {
-        var book = Book.of("1234561237", "Title", "Author", 12.90);
+        var book = Book.of("1234561237", "Title", "Author", 12.90, "Publisher");
         jdbcAggregateTemplate.insert(book);
         boolean actual = bookRepository.existsByIsbn("0000000000");
         assertThat(actual).isEqualTo(false);
@@ -69,7 +69,7 @@ class BookRepositoryJdbcTests {
 
     @Test
     void existByIsbnIsTrue() {
-        var book = Book.of("1234561237", "Title", "Author", 12.90);
+        var book = Book.of("1234561237", "Title", "Author", 12.90, "Publisher");
         jdbcAggregateTemplate.insert(book);
         boolean actual = bookRepository.existsByIsbn("1234561237");
         assertThat(actual).isEqualTo(true);
@@ -77,7 +77,7 @@ class BookRepositoryJdbcTests {
 
     @Test
     void deleteByIsbn() {
-        var book = Book.of("1234561237", "Title", "Author", 12.90);
+        var book = Book.of("1234561237", "Title", "Author", 12.90, "Publisher");
         var insertedBook = jdbcAggregateTemplate.insert(book);
         bookRepository.deleteByIsbn("1234561237");
 
@@ -86,10 +86,21 @@ class BookRepositoryJdbcTests {
 
     @Test
     void createDateGetsSetAfterSave() {
-        var book = Book.of("1234561237", "Title", "Author", 12.90);
+        var book = Book.of("1234561237", "Title", "Author", 12.90, "Publisher");
 
         var savedBook = bookRepository.save(book);
 
         assertThat(savedBook.createdDate()).isNotNull();
     }
+
+    @Test
+    void findBooksByAuthor() {
+        var book = Book.of("1234561237", "Title", "Author", 12.90, "Publisher");
+        jdbcAggregateTemplate.insert(book);
+        var actual = bookRepository.findAllByAuthor("Author");
+
+        assertThat(actual.iterator().next().author().equals("Author"));
+
+    }
+
 }

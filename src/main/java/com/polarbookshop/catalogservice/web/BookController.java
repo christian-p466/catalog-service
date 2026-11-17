@@ -29,6 +29,11 @@ public class BookController {
         return bookService.viewBookDetails(isbn);
     }
 
+    @GetMapping()
+    public Iterable<Book> getBooksByAuthor(@RequestParam String author) {
+        return bookService.getBooksByAuthor(author);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Book post(@Valid @RequestBody Book book) {
@@ -44,7 +49,7 @@ public class BookController {
     @PutMapping("{isbn}")
     public ResponseEntity<Book> put(@PathVariable String isbn, @Valid @RequestBody Book book) {
         if (!isbn.equals(book.isbn())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Path ISBN must match the ISBN in the request body");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Path ISBN must match the ISBN in the request body.");
         }
         return bookService.editBookDetails(isbn, book);
     }

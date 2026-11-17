@@ -42,7 +42,7 @@ class BookControllerMvcTests {
     @Test
     void whenPutCreatesBookThenShouldReturn201() throws Exception {
         String isbn = "0306406152";
-        var book = Book.of(isbn, "Title", "Author", 9.90);
+        var book = Book.of(isbn, "Title", "Author", 9.90, "Publisher");
 
         given(bookService.editBookDetails(eq(isbn), any(Book.class)))
                 .willReturn(ResponseEntity.status(HttpStatus.CREATED).body(book));
@@ -55,6 +55,7 @@ class BookControllerMvcTests {
                               "title": "Title",
                               "author": "Author",
                               "price": 9.90,
+                              "publisher": "Publisher",
                               "version": 0
                             }
                             """))
@@ -66,7 +67,7 @@ class BookControllerMvcTests {
     @Test
     void whenPutUpdatesBookThenShouldReturn200() throws Exception {
         String isbn = "0306406152";
-        var book = Book.of(isbn, "Updated Title", "Author", 9.90);
+        var book = Book.of(isbn, "Updated Title", "Author", 9.90, "Publisher");
 
         given(bookService.editBookDetails(eq(isbn), any(Book.class)))
                 .willReturn(ResponseEntity.ok(book));
@@ -79,12 +80,17 @@ class BookControllerMvcTests {
                               "title": "Updated Title",
                               "author": "Author",
                               "price": 9.90,
+                              "publisher": "Publisher",
                               "version": 0
                             }
                             """))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Updated Title"));
+    }
+
+    void whenGetBooksByAuthorThenShouldReturn200() throws Exception {
+
     }
 
 }

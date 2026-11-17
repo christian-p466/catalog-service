@@ -23,6 +23,10 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(isbn));
     }
 
+    public Iterable<Book> getBooksByAuthor(String author) {
+        return bookRepository.findAllByAuthor(author);
+    }
+
     public Book addBookToCatalog(Book book) {
         if (bookRepository.existsByIsbn(book.isbn())) {
             throw new BookAlreadyExistsException(book.isbn());
@@ -44,6 +48,7 @@ public class BookService {
                             book.price(),
                             existing.createdDate(),
                             existing.lastModifiedDate(),
+                            existing.publisher(),
                             existing.version());
 
                     return ResponseEntity.ok(bookRepository.save(updated));

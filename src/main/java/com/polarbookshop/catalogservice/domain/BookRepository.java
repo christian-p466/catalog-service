@@ -18,4 +18,6 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     @Transactional
     @Query("delete from book where isbn = :isbn")
     void deleteByIsbn(String isbn);
+
+    Iterable<Book> findAllByAuthor(String author);
 }

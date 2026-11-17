@@ -36,7 +36,14 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+tasks.named('jar') {
+	enabled = false
+}
 
 bootRun {
 	systemProperty 'spring.profiles.active', 'testdata'
+}
+bootBuildImage {
+	imageName = "${project.name}:${project.version}"
+	environment = ["BP_JVM_VERSION": "21"]
 }
