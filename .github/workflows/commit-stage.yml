@@ -4,6 +4,7 @@ on: push
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: christian-p466/catalog-service
+  VERSION: ${{ github.sha }}
 
 jobs:
   build:
