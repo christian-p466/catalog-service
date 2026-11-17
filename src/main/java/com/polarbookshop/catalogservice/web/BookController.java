@@ -19,7 +19,7 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @GetMapping
+    @GetMapping(params = "!author")
     public Iterable<Book> get() {
         return bookService.viewBookList();
     }
@@ -29,7 +29,7 @@ public class BookController {
         return bookService.viewBookDetails(isbn);
     }
 
-    @GetMapping()
+    @GetMapping(params = "author")
     public Iterable<Book> getBooksByAuthor(@RequestParam String author) {
         return bookService.getBooksByAuthor(author);
     }

@@ -89,8 +89,5 @@ class BookControllerMvcTests {
                 .andExpect(jsonPath("$.title").value("Updated Title"));
     }
 
-    void whenGetBooksByAuthorThenShouldReturn200() throws Exception {
-
-    }
 
 }
