@@ -20,3 +20,13 @@ spring:
     hikari:
       connection-timeout: 2000      # ms to wait for a free connection
       maximum-pool-size: 5          # connections kept open and reused
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
